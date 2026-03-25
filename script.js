@@ -49,6 +49,7 @@ function init() {
   Fetch a Random Meal from TheMealDB
   Returns a Promise that resolves with the meal object
  */
+
 function fetchRandomMeal() {
     // Fill in
 }
