@@ -29,6 +29,7 @@ const mealCategoryToCocktailIngredient = {
       - Fetch matching (or random) cocktail
       - Display cocktail
 */
+
 function init() {
   fetchRandomMeal()
     .then((meal) => {
