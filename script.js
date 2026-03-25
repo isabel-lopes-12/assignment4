@@ -78,8 +78,26 @@ We call https://www.thecocktaildb.com/api/json/v1/1/search.php?s=DRINK_INGREDIEN
 Don't forget encodeURIComponent()
 If no cocktails found, fetch random
 */
+
 function fetchCocktailByDrinkIngredient(drinkIngredient) {
-    // Fill in
+  const url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(drinkIngredient)}`;
+
+  return fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      if (!data.drinks) {
+        return fetchRandomCocktail();
+      }
+
+      const randomDrink =
+        data.drinks[Math.floor(Math.random() * data.drinks.length)];
+
+      return fetch(
+        `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${randomDrink.idDrink}`
+      )
+        .then((res) => res.json())
+        .then((data) => data.drinks[0]);
+    });
 }
 
 /*
@@ -87,14 +105,38 @@ Fetch a Random Cocktail (backup in case nothing is found by the search)
 Returns a Promise that resolves to cocktail object
 */
 function fetchRandomCocktail() {
-    // Fill in
+  return fetch("https://www.thecocktaildb.com/api/json/v1/1/random.php")
+    .then((res) => res.json())
+    .then((data) => data.drinks[0]);
 }
 
 /*
 Display Cocktail Data in the DOM
 */
 function displayCocktailData(cocktail) {
-    // Fill in
+  const container = document.getElementById("cocktail-container");
+
+  if (!cocktail) {
+    container.innerHTML = "<p>No cocktail found.</p>";
+    return;
+  }
+
+  let ingredients = "";
+  for (let i = 1; i <= 15; i++) {
+    const ing = cocktail[`strIngredient${i}`];
+    const meas = cocktail[`strMeasure${i}`];
+
+    if (ing) {
+      ingredients += `<li>${meas || ""} ${ing}</li>`;
+    }
+  }
+
+  container.innerHTML = `
+    <h2>${cocktail.strDrink}</h2>
+    <img src="${cocktail.strDrinkThumb}" width="300" />
+    <ul>${ingredients}</ul>
+    <p>${cocktail.strInstructions}</p>
+  `;
 }
 
 /*
