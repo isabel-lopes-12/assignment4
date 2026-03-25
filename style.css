@@ -8,6 +8,7 @@ body {
 #title {
   grid-column: span 2;
   text-align: center;
+  color: rgb(198, 172, 234);
 }
 .meal,
 .cocktail {
