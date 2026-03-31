@@ -51,7 +51,17 @@ function init() {
  */
 
 function fetchRandomMeal() {
-    // Fill in
+  return fetch("https://www.themealdb.com/api/json/v1/1/random.php")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Kunne ikke hente meal");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      return data.meals[0];
+    });
 }
 
 /*
@@ -60,9 +70,20 @@ Receives a meal object with fields like:
   strMeal, strMealThumb, strCategory, strInstructions,
   strIngredientX, strMeasureX, etc.
 */
+
 function displayMealData(meal) {
-    // Fill in
-}
+  const mealContainer = document.getElementById("meal-container");
+
+  let ingredientsHTML = "";
+
+  for (let i = 1; i <= 20; i++) {
+    const ingredient = meal[`strIngredient${i}`];
+    const measure = meal[`strMeasure${i}`];
+
+    if (ingredient && ingredient.trim() !== "") {
+      ingredientsHTML += `<li>${ingredient} - ${measure ? measure : ""}</li>`;
+    }
+  }
 
 /*
 Convert MealDB Category to a TheCocktailDB Spirit
@@ -72,7 +93,20 @@ function mapMealCategoryToDrinkIngredient(category) {
   if (!category) return "cola";
   return mealCategoryToCocktailIngredient[category] || "cola";
 }
+  mealContainer.innerHTML = `
+    <h2>${meal.strMeal}</h2>
+    <img src="${meal.strMealThumb}" alt="${meal.strMeal}" width="300">
+    <p><strong>Category:</strong> ${meal.strCategory}</p>
+    
+    <h3>Ingredients</h3>
+    <ul>
+      ${ingredientsHTML}
+    </ul>
 
+    <h3>Instructions</h3>
+    <p>${meal.strInstructions}</p>
+  `;
+}
 /*
 Fetch a Cocktail Using a Spirit from TheCocktailDB
 Returns Promise that resolves to cocktail object
