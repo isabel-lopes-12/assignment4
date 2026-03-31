@@ -1,7 +1,3 @@
-/*
-Mapping from MealDB Categories to TheCocktailDB drink ingredient
-You can customize or expand this object to suit your needs.
-*/
 const mealCategoryToCocktailIngredient = {
   Beef: "whiskey",
   Chicken: "gin",
@@ -17,18 +13,13 @@ const mealCategoryToCocktailIngredient = {
   Breakfast: "vodka",
   Goat: "whiskey",
   Vegan: "rum",
-  // Add more if needed; otherwise default to something like 'cola'
 };
 
-/*
-    2) Main Initialization Function
-      Called on page load to start all the requests:
-      - Fetch random meal
-      - Display meal
-      - Map meal category to spirit
-      - Fetch matching (or random) cocktail
-      - Display cocktail
-*/
+/* ✅ FIXED: moved OUTSIDE */
+function mapMealCategoryToDrinkIngredient(category) {
+  if (!category) return "cola";
+  return mealCategoryToCocktailIngredient[category] || "cola";
+}
 
 function init() {
   fetchRandomMeal()
@@ -45,11 +36,6 @@ function init() {
     });
 }
 
-/*
-  Fetch a Random Meal from TheMealDB
-  Returns a Promise that resolves with the meal object
- */
-
 function fetchRandomMeal() {
   return fetch("https://www.themealdb.com/api/json/v1/1/random.php")
     .then((response) => {
@@ -58,18 +44,8 @@ function fetchRandomMeal() {
       }
       return response.json();
     })
-    .then((data) => {
-      console.log(data);
-      return data.meals[0];
-    });
+    .then((data) => data.meals[0]);
 }
-
-/*
-Display Meal Data in the DOM
-Receives a meal object with fields like:
-  strMeal, strMealThumb, strCategory, strInstructions,
-  strIngredientX, strMeasureX, etc.
-*/
 
 function displayMealData(meal) {
   const mealContainer = document.getElementById("meal-container");
@@ -85,14 +61,6 @@ function displayMealData(meal) {
     }
   }
 
-/*
-Convert MealDB Category to a TheCocktailDB Spirit
-Looks up category in our map, or defaults to 'cola'
-*/
-function mapMealCategoryToDrinkIngredient(category) {
-  if (!category) return "cola";
-  return mealCategoryToCocktailIngredient[category] || "cola";
-}
   mealContainer.innerHTML = `
     <h2>${meal.strMeal}</h2>
     <img src="${meal.strMealThumb}" alt="${meal.strMeal}" width="300">
@@ -107,13 +75,6 @@ function mapMealCategoryToDrinkIngredient(category) {
     <p>${meal.strInstructions}</p>
   `;
 }
-/*
-Fetch a Cocktail Using a Spirit from TheCocktailDB
-Returns Promise that resolves to cocktail object
-We call https://www.thecocktaildb.com/api/json/v1/1/search.php?s=DRINK_INGREDIENT to get a list of cocktails
-Don't forget encodeURIComponent()
-If no cocktails found, fetch random
-*/
 
 function fetchCocktailByDrinkIngredient(drinkIngredient) {
   const url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(drinkIngredient)}`;
@@ -136,19 +97,12 @@ function fetchCocktailByDrinkIngredient(drinkIngredient) {
     });
 }
 
-/*
-Fetch a Random Cocktail (backup in case nothing is found by the search)
-Returns a Promise that resolves to cocktail object
-*/
 function fetchRandomCocktail() {
   return fetch("https://www.thecocktaildb.com/api/json/v1/1/random.php")
     .then((res) => res.json())
     .then((data) => data.drinks[0]);
 }
 
-/*
-Display Cocktail Data in the DOM
-*/
 function displayCocktailData(cocktail) {
   const container = document.getElementById("cocktail-container");
 
@@ -175,7 +129,4 @@ function displayCocktailData(cocktail) {
   `;
 }
 
-/*
-Call init() when the page loads
-*/
 window.onload = init;
